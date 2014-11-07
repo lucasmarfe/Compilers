@@ -1,10 +1,10 @@
 package lexer;
 
-public class NumFloat extends Token {
+public class NumReal extends Token {
 	
 	public final float m_value;
 	
-	public NumFloat(float p_value) {
+	public NumReal(float p_value) {
 		super(Tag.INTEGER_CONST);
 		m_value = p_value;
 	}

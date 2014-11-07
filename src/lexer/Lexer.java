@@ -72,18 +72,68 @@ public class Lexer {
 	      case '|':
 	         if( readch('|') ) return Word.Or;   else return new Token('|');
 	      case '=':
-	         return Word.Equal;
+	         return new Token((int) '=');
 	      case '!':
 	         if( readch('=') ) return Word.NotEqual;   else return new Token('!');
 	      case '<':
-	         if( readch('=') ) return Word.LessEqual;   else return Word.Less;
+	         if( readch('=') ) return Word.LessEqual;   else return new Token((int) '<');
 	      case '>':
-	         if( readch('=') ) return Word.Greater;   else return Word.Greater;
+	         if( readch('=') ) return Word.GreaterEqual;   else return new Token((int) '>');
+		}
+		
+		if( Character.isDigit(m_charLido) ) {
+	         int v = 0;
+	         do 
+	         {
+	            v = 10*v + Character.digit(m_charLido, 10); readch();
+	         } 
+	         while( Character.isDigit(m_charLido) );
+	         if( m_charLido != '.' ) return new NumInteger(v);
+	         float x = v; float d = 10;
+	         for(;;)
+	         {
+	            readch();
+	            if( ! Character.isDigit(m_charLido) ) 
+            	{
+	            	break;
+            	}
+	            x = x + Character.digit(m_charLido, 10) / d; d = d*10;
+	         }
+	         return new NumReal(x);
+	      }
+		if( m_charLido == '"') {
+	         StringBuffer b = new StringBuffer();
+	         do 
+	         {
+	            b.append(m_charLido);
+	            readch();
+	         } 
+	         while( m_charLido != '"' );
+	         b.append(m_charLido);
+	         String s = b.toString();
+	         return new Literal(s);
 	      }
 		
-		
-		
-		return null;
+		if( Character.isLetter(m_charLido) ) {
+	         StringBuffer b = new StringBuffer();
+	         do 
+	         {
+	            b.append(m_charLido); readch();
+	         } 
+	         while( Character.isLetterOrDigit(m_charLido) );
+	         String s = b.toString();
+	         Word w = (Word)words.get(s);
+	         if( w != null )
+	         {
+	        	 return w;
+	         }
+	         w = new Word(s, Tag.ID);
+	         words.put(s, w);
+	         return w;
+	      }
+		Token tok = new Token(m_charLido);
+		m_charLido = ' ';
+		return tok;
 	}
 	
 }
