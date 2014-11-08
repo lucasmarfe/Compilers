@@ -50,10 +50,10 @@ public class Lexer {
 	
 	public Token scan() throws IOException {
 		//TODO Implementar
-		/**Desconsidera espaços em branco, tabulações e quebra de linha**/
+		/**Desconsidera espaços em branco, tabulações, quebra de linha e comentário de uma linha**/
 		for( ; ; readch() ) 
 		{
-			if ( m_charLido == ' ' || m_charLido == '\t')
+			if ( m_charLido == ' ' || m_charLido == '\t' || m_charLido == '%')
 			{
 				continue;
 			}
@@ -80,7 +80,7 @@ public class Lexer {
 	      case '>':
 	         if( readch('=') ) return Word.GreaterEqual;   else return new Token((int) '>');
 		}
-		
+		// Real ou integer
 		if( Character.isDigit(m_charLido) ) {
 	         int v = 0;
 	         do 
@@ -101,6 +101,7 @@ public class Lexer {
 	         }
 	         return new NumReal(x);
 	      }
+		//Literal: caracteres entre parentesis
 		if( m_charLido == '"') {
 	         StringBuffer b = new StringBuffer();
 	         do 
@@ -113,15 +114,17 @@ public class Lexer {
 	         String s = b.toString();
 	         return new Literal(s);
 	      }
-		
+		//Identificadores
 		if( Character.isLetter(m_charLido) ) {
 	         StringBuffer b = new StringBuffer();
+	         int c_count =0;
 	         do 
 	         {
 	            b.append(m_charLido); readch();
 	         } 
-	         while( Character.isLetterOrDigit(m_charLido) );
+	         while( Character.isLetterOrDigit(m_charLido));
 	         String s = b.toString();
+	         s = s.substring(0, 26); //Identificadores não devem ter mais que 25 caracteres
 	         Word w = (Word)words.get(s);
 	         if( w != null )
 	         {
