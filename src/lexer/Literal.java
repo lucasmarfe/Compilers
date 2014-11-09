@@ -4,9 +4,9 @@ public class Literal extends Token{
 	
 	public final String m_value;
 	
-	public Literal(String p_value) {
+	public Literal(String m_value) {
 		super(Tag.LITERAL);
-		m_value = p_value;
+		this.m_value = m_value;
 	}
 	
 	@Override

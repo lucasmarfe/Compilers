@@ -1,0 +1,10 @@
+program teste2
+declarando
+  integer a;
+  integer b;
+  float c;
+{
+  read (a);
+  b := a * a;
+c := b + a/2 * (3 + 5);
+write(c) };

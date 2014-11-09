@@ -1,0 +1,14 @@
+program teste5
+   %Este e um programa com if
+        integer j, k;
+        real a, j;
+{
+read(j);
+read(k);
+     if (k != 0)
+        result := j/k
+     else
+        result := 0
+end;
+write(res) 
+}

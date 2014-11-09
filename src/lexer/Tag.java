@@ -1,14 +1,14 @@
 package lexer;
 
 public class Tag {
-	public final static int 	PROGRAM = 256;
+	public final static int PROGRAM = 256;
 	public final static int ID = 265; //Identificador
 	public final static int INTEGER = 266; //Integer - Palavra reservada
 	public final static int REAL = 267; //Real -Palavra reservada
 	public final static int LITERAL = 268; //Literal
-	public final static int	INDEX = 269; //Será usada na árvore sintática, conforme implementação Aho (2006)
-	public final static int MINUS = 270; //Será usada na árvore sintática, conforme implementação Aho (2006)
-	public final static int TEMP = 271; //Será usada na árvore sintática, conforme implementação Aho (2006)
+	public final static int	INDEX = 269; //Sera usada na arvore sintatica, conforme implementacao Aho (2006)
+	public final static int MINUS = 270; //Sera usada na arvore sintatica, conforme implementacao Aho (2006)
+	public final static int TEMP = 271; //Sera usada na arvore sintatica, conforme implementacao Aho (2006)
 	public final static int IF = 272; //if
 	public final static int THEN = 273; //then
 	public final static int END = 274; //end
@@ -28,4 +28,6 @@ public class Tag {
 	public final static int ASSIGN = 295; //Operador assign :=
 	public final static int WRITE = 296; //write
 	public final static int BASIC = 297; //
+	public final static int ERRO = -10; // Erro
+	public final static int COMENTARIO = -11;
 }
