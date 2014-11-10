@@ -13,9 +13,8 @@ public class Lexer {
 	public static int m_line = 1;
 	public char m_charLido = ' ';
 	Hashtable<String, Token> words = new Hashtable<String, Token>();
-	public FileInputStream stream;
-	public InputStreamReader reader; // Estão como public apenas para poder
-										// testar na main
+	FileInputStream stream;
+	InputStreamReader reader; 
 
 	ArrayList<Character> Delimitadores = new ArrayList<Character>();
 
@@ -81,161 +80,193 @@ public class Lexer {
 	}
 
 	public Token scan() throws IOException {
-		//TODO Implementar
-		
-		/**Desconsidera espaços em branco, tabulações, quebra de linha e comentário de uma linha**/
-		for( ; ; readch() ) 
-		{
-			if (isDelimiter(m_charLido))
-			{
+		// TODO Implementar
+
+		/**
+		 * Desconsidera espaços em branco, tabulações, quebra de linha e
+		 * comentário de uma linha
+		 **/
+		for (;; readch()) {
+			if (isDelimiter(m_charLido)) {
 				continue;
 			}
-			
+
 			// Tratamento de comentarios
-			else if(m_charLido == '%'){
+			else if (m_charLido == '%') {
 				StringBuffer coment = new StringBuffer();
 				readch();
-				while(m_charLido != '\n' && m_charLido != '\r'){
+				while (m_charLido != '\n' && m_charLido != '\r') {
 					coment.append(m_charLido);
 					readch();
 				}
-				
-				if ( m_charLido == '\n'){
+
+				if (m_charLido == '\n') {
 					m_line++;
 					return new Token(Tag.COMENTARIO, coment.toString());
-								
+
 				}
 			}
-			
-			else if ( m_charLido == '\n') 
-			{
+
+			else if (m_charLido == '\n') {
 				m_line++;
-			}
-			else
-			{
+			} else {
 				break;
 			}
 		}
-		
-		switch( m_charLido ) {
-	      case '&':
-	         if( readch('&') ) return Word.And;  else return new Token('&');
-	      case '|':
-	         if( readch('|') ) return Word.Or;   else return new Token('|');
-	      case '!':
-	         if( readch('=') ) return Word.NotEqual;   else return new Token('!');
-	      case '<':
-	         if( readch('=') ) return Word.LessEqual;   else return new Token((int) '<');
-	      case '>':
-	         if( readch('=') ) return Word.GreaterEqual;   else return new Token((int) '>');
-	      case '=':
-	    	  if( readch(':') ) return Word.Assign;   else return new Token((int) '=');
-		}
-		
-		// Real ou integer
-		if( Character.isDigit(m_charLido) ) {
-			
-			int v = 0;
-	         do 
-	         {
-	        	v = 10*v + Character.digit(m_charLido, 10); readch();
-	         } 
-	         while( Character.isDigit(m_charLido) );
-	         
-	         
-	         if( m_charLido != '.' ) return new NumInteger(v);
-	       
-	         
-	         int i;float x = (float)v; float d = 10f;
-	       
-	         for(i = 0;; i++)
-	         {
-	            readch();
 
-	            if( ! Character.isDigit(m_charLido)) 
-            	{
-	            	
-	            		if(i == 0){  // Se 1o caracter após '.' for algo diferente de dígito, deverá ser apontado o erro
-	            		  System.out.println("Erro na linha " + m_line + ": " + "constante mal formada");
-	            		  return new Token(Tag.ERRO);
-	            		}
-	            		else{
-	            		  break; // Reconhecimento do número real
-	            		}
-	            	
-            	}
-	          
-	            
-	            	x = x + (float)(Character.digit(m_charLido, 10) / d); 
-	            	d = d*10;
-	            
-	            	 // Notificação de overflow
-	            	// Não funciona em java, uma vez que não é possível determinar flags para overflow conforme especificação do IEEE-754
-	   	        	 if(Float.isInfinite(x)){
-	   	        	 System.out.println("Erro linha " + m_line + ": o número não pode ser representado");
-	   	        	 return new Token(Tag.ERRO);
-	   	        	 }
-	   	         
-	            	            
-	         }
-	         // Tratamento de casas decimais
-	         if(i > 7){ // Floats representam entre 6 e 7 casas decimais, caso o número possua mais que esse número de casas, ele é arredondado
-	        	 System.out.println("Atenção: Linha "+ m_line + ": número real com mais de 7 casas decimais - o número será truncado");
-	         }
-	         
-	         
-	         // Tratamento da questão da exatidão de floats em java - apenas para melhorar a representação
-	         // Pode ser melhorado também analisando a última casa decimal lida, e usar floor, para ultimo_caractere <= 5 e ceil, caso contrário
-	         x = (float) Math.ceil(x*(float)Math.pow(10, i+1))/(float)Math.pow(10, i+1); // o número será truncado no número de casas decimais do código-fonte
-	         
-	         return new NumReal(x);
-	        
-	      }
-		
-		//Literal: caracteres entre parentesis
-		if( m_charLido == '"') {
-	         StringBuffer b = new StringBuffer();
-	         do 
-	         {
-	            b.append(m_charLido);
-	            readch();
-	         } 
-	         while( m_charLido != '"' );
-	         b.append(m_charLido);
-	         String s = b.toString();
-	         return new Literal(s);
-	      }
-		
-		//Identificadores
-		if( Character.isLetter(m_charLido) ) {
-	         StringBuffer b = new StringBuffer();
-	         do 
-	         {
-	            b.append(m_charLido); readch();
-	         } 
-	         while(Character.isLetterOrDigit(m_charLido) || m_charLido == '_');
-	         String s = b.toString();
-	         if(b.length() >= 25){   // Caso o identificador tenha mais do que 25 caracteres
-	         s = s.substring(0, 24); //Identificadores não devem ter mais que 25 caracteres
-	         }
-	         Word w = (Word)words.get(s);
-	         if( w != null )
-	         {
-	        	 return w;
-	         }
-	         w = new Word(s, Tag.ID);
-	         words.put(w.m_lexema, w);
-	         return w;
-	      }
+		switch (m_charLido) {
+		case '&':
+			if (readch('&'))
+				return Word.And;
+			else
+				return new Token('&');
+		case '|':
+			if (readch('|'))
+				return Word.Or;
+			else
+				return new Token('|');
+		case '!':
+			if (readch('='))
+				return Word.NotEqual;
+			else
+				return new Token('!');
+		case '<':
+			if (readch('='))
+				return Word.LessEqual;
+			else
+				return new Token((int) '<');
+		case '>':
+			if (readch('='))
+				return Word.GreaterEqual;
+			else
+				return new Token((int) '>');
+		case '=':
+			if (readch(':'))
+				return Word.Assign;
+			else
+				return new Token((int) '=');
+		}
+
+		// Real ou integer
+		if (Character.isDigit(m_charLido)) {
+
+			int v = 0;
+			do {
+				v = 10 * v + Character.digit(m_charLido, 10);
+				readch();
+			} while (Character.isDigit(m_charLido));
+
+			if (m_charLido != '.')
+				return new NumInteger(v);
+
+			int i;
+			float x = (float) v;
+			float d = 10f;
+			int ultimo = 0; // Será usado para determinar a última casa decimal
+							// lida, para auxiliar no truncamento
+
+			for (i = 0;; i++) {
+				readch();
+
+				if (!Character.isDigit(m_charLido)) {
+
+					if (i == 0) { // Se 1o caracter após '.' for algo diferente
+									// de dígito, deverá ser apontado o erro
+						System.out.println("Erro na linha " + m_line + ": "
+								+ "constante mal formada");
+						return new Token(Tag.ERRO);
+					} else {
+						break; // Reconhecimento do número real
+					}
+
+				}
+
+				x = x + (float) (Character.digit(m_charLido, 10) / d);
+				d = d * 10;
+				ultimo = Character.digit(m_charLido, 10);
+				// Notificação de overflow
+				// Não funciona em java, uma vez que não é possível determinar
+				// flags para overflow conforme especificação do IEEE-754
+				if (Float.isInfinite(x)) {
+					System.out.println("Erro linha " + m_line
+							+ ": o número não pode ser representado");
+					return new Token(Tag.ERRO);
+				}
+
+			}
+			// Tratamento de casas decimais
+			if (i > 7) { // Floats representam entre 6 e 7 casas decimais, caso
+							// o número possua mais que esse número de casas,
+							// ele é arredondado
+				System.out
+						.println("Atenção: Linha "
+								+ m_line
+								+ ": número real com mais de 7 casas decimais - o número será truncado");
+			}
+
+			// Tratamento da questão da exatidão de floats em java - apenas para
+			// melhorar a representação
+			if (ultimo >= 5) {
+				x = (float) Math.ceil(x * (float) Math.pow(10, i + 1))
+						/ (float) Math.pow(10, i + 1); // o número será truncado
+														// no número de casas
+														// decimais do
+														// código-fonte com base no último dígito
+			} else if (ultimo < 5) {
+				x = (float) Math.floor(x * (float) Math.pow(10, i + 1))
+						/ (float) Math.pow(10, i + 1); // o número será truncado
+														// no número de casas
+														// decimais do
+														// código-fonte
+			}
+			return new NumReal(x);
+
+		}
+
+		// Literal: caracteres entre parentesis
+		if (m_charLido == '"') {
+			StringBuffer b = new StringBuffer();
+			do {
+				b.append(m_charLido);
+				readch();
+			} while (m_charLido != '"');
+			b.append(m_charLido);
+			String s = b.toString();
+			return new Literal(s);
+		}
+
+		// Identificadores
+		if (Character.isLetter(m_charLido)) {
+			StringBuffer b = new StringBuffer();
+			do {
+				b.append(m_charLido);
+				readch();
+			} while (Character.isLetterOrDigit(m_charLido) || m_charLido == '_');
+			String s = b.toString();
+			if (b.length() >= 25) { // Caso o identificador tenha mais do que 25
+									// caracteres
+				s = s.substring(0, 24); // Identificadores não devem ter mais
+										// que 25 caracteres
+			}
+			Word w = (Word) words.get(s);
+			if (w != null) {
+				return w;
+			}
+			w = new Word(s, Tag.ID);
+			words.put(w.m_lexema, w);
+			return w;
+		}
 		Token tok = new Token(m_charLido);
 		m_charLido = ' ';
 		return tok;
 	}
 
+	// Método para poder acessar reader a partir da main
 	public InputStreamReader getReader() {
 		return reader;
 	}
-	
+
+	// Método para poder acessar a tabela de símbolos através da main
 	public Hashtable<String, Token> getHashtable() {
 		return words;
 	}
