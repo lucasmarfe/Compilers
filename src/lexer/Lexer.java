@@ -135,30 +135,19 @@ public class Lexer {
 		// Real ou integer
 		if( Character.isDigit(m_charLido) ) {
 			
-			StringBuffer stringInteiro = new StringBuffer();
-			StringBuffer stringDecimal = new StringBuffer();
-			
+			int v = 0;
 	         do 
 	         {
-	        	stringInteiro.append(m_charLido); readch();
-	            
+	        	v = 10*v + Character.digit(m_charLido, 10); readch();
 	         } 
 	         while( Character.isDigit(m_charLido) );
 	         
-	         int inteiro = 0;
-	         try{
-	        	 inteiro = Integer.parseInt(stringInteiro.toString());
-		         }
-		         catch(java.lang.NumberFormatException e){
-		        	 
-		        	 System.out.println("Erro linha " + m_line + ": o número não pode ser representado");
-		        	 return new Token(Tag.ERRO);
-		         }
 	         
-	         if( m_charLido != '.' ) return new NumInteger(inteiro);
+	         if( m_charLido != '.' ) return new NumInteger(v);
+	       
 	         
-	         
-	         int i;
+	         int i;float x = (float)v; float d = 10f;
+	       
 	         for(i = 0;; i++)
 	         {
 	            readch();
@@ -166,7 +155,7 @@ public class Lexer {
 	            if( ! Character.isDigit(m_charLido)) 
             	{
 	            	
-	            		if(i == 0){  // Se 1o caracter após '.' for um delimitador, deverá ser apontado o erro
+	            		if(i == 0){  // Se 1o caracter após '.' for algo diferente de dígito, deverá ser apontado o erro
 	            		  System.out.println("Erro na linha " + m_line + ": " + "constante mal formada");
 	            		  return new Token(Tag.ERRO);
 	            		}
@@ -177,23 +166,29 @@ public class Lexer {
             	}
 	          
 	            
-	            stringDecimal.append(m_charLido);
+	            	x = x + (float)(Character.digit(m_charLido, 10) / d); 
+	            	d = d*10;
 	            
+	            	 // Notificação de overflow
+	            	// Não funciona em java, uma vez que não é possível determinar flags para overflow conforme especificação do IEEE-754
+	   	        	 if(Float.isInfinite(x)){
+	   	        	 System.out.println("Erro linha " + m_line + ": o número não pode ser representado");
+	   	        	 return new Token(Tag.ERRO);
+	   	        	 }
+	   	         
 	            	            
 	         }
-	         int decimal = 0;
-	         try{ // Caso haja overflow, reportar o erro
-	         decimal = Integer.parseInt(stringDecimal.toString());
-	         }
-	         catch(java.lang.NumberFormatException e){
-	        	 
-	        	 System.out.println("Erro linha " + m_line + ": o número não pode ser representado");
-	        	 return new Token(Tag.ERRO);
+	         // Tratamento de casas decimais
+	         if(i > 7){ // Floats representam entre 6 e 7 casas decimais, caso o número possua mais que esse número de casas, ele é arredondado
+	        	 System.out.println("Atenção: Linha "+ m_line + ": número real com mais de 7 casas decimais - o número será truncado");
 	         }
 	         
 	         
-	         float result = (float)inteiro + (float)decimal/(float)Math.pow(10, i);
-	         return new NumReal(result);
+	         // Tratamento da questão da exatidão de floats em java - apenas para melhorar a representação
+	         // Pode ser melhorado também analisando a última casa decimal lida, e usar floor, para ultimo_caractere <= 5 e ceil, caso contrário
+	         x = (float) Math.ceil(x*(float)Math.pow(10, i+1))/(float)Math.pow(10, i+1); // o número será truncado no número de casas decimais do código-fonte
+	         
+	         return new NumReal(x);
 	        
 	      }
 		
