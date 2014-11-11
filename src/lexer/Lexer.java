@@ -14,7 +14,7 @@ public class Lexer {
 	public char m_charLido = ' ';
 	Hashtable<String, Token> words = new Hashtable<String, Token>();
 	FileInputStream stream;
-	InputStreamReader reader; 
+	InputStreamReader reader;
 
 	ArrayList<Character> Delimitadores = new ArrayList<Character>();
 
@@ -29,6 +29,14 @@ public class Lexer {
 		}
 		return false;
 
+	}
+
+	boolean isValidChar(char c) {
+
+		if (((byte) c >= 0 && (byte) c <= 127)) {
+			return true;
+		}
+		return false;
 	}
 
 	void addReserveWords(Word w) {
@@ -91,7 +99,8 @@ public class Lexer {
 				continue;
 			}
 
-			// Tratamento de comentarios
+			// Tratamento de comentarios - São aceitos caracteres diferentes dos
+			// da tabela ASCII
 			else if (m_charLido == '%') {
 				StringBuffer coment = new StringBuffer();
 				readch();
@@ -112,6 +121,36 @@ public class Lexer {
 			} else {
 				break;
 			}
+		}
+
+		// Literal: caracteres entre aspas duplas -> podem conter caracteres
+		// diferentes dos da tabela ASCII
+		if (m_charLido == '"') {
+			StringBuffer b = new StringBuffer();
+			do {
+				b.append(m_charLido);
+				readch();
+
+				if (m_charLido == '\n') { // Caso não feche aspas duplas
+					System.out.println("Erro na linha " + m_line
+							+ ": esperado token \" após literal");
+					return new Token(Tag.ERRO);
+				}
+
+			} while (m_charLido != '"');
+			b.append(m_charLido);
+			String s = b.toString();
+			m_charLido = ' ';
+			return new Literal(s);
+		}
+
+		// A partir deste ponto, não pode haver caracteres que não estejam na
+		// tabela ASCII
+		if (!isValidChar(m_charLido) && m_charLido != (char)65535) {
+			System.out.println("Erro na linha " + m_line
+					+ ": caractere inválido");
+			m_charLido = ' ';
+			return new Token(Tag.ERRO);
 		}
 
 		switch (m_charLido) {
@@ -156,8 +195,9 @@ public class Lexer {
 				readch();
 			} while (Character.isDigit(m_charLido));
 
-			if (m_charLido != '.')
+			if (m_charLido != '.') {
 				return new NumInteger(v);
+			}
 
 			int i;
 			float x = (float) v;
@@ -211,7 +251,8 @@ public class Lexer {
 						/ (float) Math.pow(10, i + 1); // o número será truncado
 														// no número de casas
 														// decimais do
-														// código-fonte com base no último dígito
+														// código-fonte com base
+														// no último dígito
 			} else if (ultimo < 5) {
 				x = (float) Math.floor(x * (float) Math.pow(10, i + 1))
 						/ (float) Math.pow(10, i + 1); // o número será truncado
@@ -223,25 +264,20 @@ public class Lexer {
 
 		}
 
-		// Literal: caracteres entre parentesis
-		if (m_charLido == '"') {
-			StringBuffer b = new StringBuffer();
-			do {
-				b.append(m_charLido);
-				readch();
-			} while (m_charLido != '"');
-			b.append(m_charLido);
-			String s = b.toString();
-			return new Literal(s);
-		}
-
 		// Identificadores
 		if (Character.isLetter(m_charLido)) {
 			StringBuffer b = new StringBuffer();
 			do {
+				if (!isValidChar(m_charLido)) {
+					System.out.println("Erro na linha " + m_line
+							+ ": caractere inválido");
+					m_charLido = ' ';
+					return new Token(Tag.ERRO);
+				}
 				b.append(m_charLido);
 				readch();
 			} while (Character.isLetterOrDigit(m_charLido) || m_charLido == '_');
+
 			String s = b.toString();
 			if (b.length() >= 25) { // Caso o identificador tenha mais do que 25
 									// caracteres
@@ -256,6 +292,7 @@ public class Lexer {
 			words.put(w.m_lexema, w);
 			return w;
 		}
+
 		Token tok = new Token(m_charLido);
 		m_charLido = ' ';
 		return tok;
