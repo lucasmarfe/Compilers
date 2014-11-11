@@ -1,7 +1,9 @@
 package main;
 
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.Set;
+
 import lexer.*;
 
 public class Main {
@@ -9,10 +11,17 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		Token tokens;
 
-		Lexer m_lex = new Lexer("Testes/teste1.mini");
-
+		
+		String nome_arq;
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.print("Insira o caminho do arquivo (Testes/teste#.mini): ");
+		nome_arq = sc.next();
+		
+		Lexer m_lex = new Lexer(nome_arq);
 		int i = 1;
-
+		
+		
 		System.out.println("Tokens extraídos:");
 		System.out.println("----------------------");
 		while (m_lex.getReader().ready()) {
