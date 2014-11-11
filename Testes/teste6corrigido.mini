@@ -1,0 +1,15 @@
+program teste6corrigido
+   integer a, b, c, maior;
+   {
+      read(a);
+      read(b);
+      read(c);
+if(a>b && a>c )then maior := a;
+      else
+         if (b>c) then
+             maior := b;
+         else
+maior := c; end;
+end;
+      write(maior);
+   }

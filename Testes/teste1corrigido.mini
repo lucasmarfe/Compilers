@@ -1,0 +1,12 @@
+program teste1corrigido
+  
+  integer a, b, c, teste1;
+  integer result;
+{
+  read (a);
+  read (c);
+  b := 10;
+  result := (a * c)/(b + 5 - 345);
+  write(result);
+  teste1 := -15;
+}
