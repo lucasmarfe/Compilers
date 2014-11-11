@@ -18,7 +18,7 @@ public class Lexer {
 
 	ArrayList<Character> Delimitadores = new ArrayList<Character>();
 
-	boolean isDelimiter(char c) { // Método que determina se um caractere pode
+	boolean isDelimiter(char c) { // Metodo que determina se um caractere pode
 									// ser desconsiderado
 
 		int tam = Delimitadores.size();
@@ -59,7 +59,7 @@ public class Lexer {
 		addReserveWords(Type.Int);
 		addReserveWords(Type.Real);
 
-		// Adiciona os delimitadores à lista de delimitadores:
+		// Adiciona os delimitadores a� lista de delimitadores:
 		Delimitadores.add(' ');
 		Delimitadores.add('\t');
 		Delimitadores.add('\r');
@@ -99,7 +99,7 @@ public class Lexer {
 				continue;
 			}
 
-			// Tratamento de comentarios - São aceitos caracteres diferentes dos
+			// Tratamento de comentarios - Sao aceitos caracteres diferentes dos
 			// da tabela ASCII
 			else if (m_charLido == '%') {
 				StringBuffer coment = new StringBuffer();
@@ -131,7 +131,7 @@ public class Lexer {
 				b.append(m_charLido);
 				readch();
 
-				if (m_charLido == '\n') { // Caso não feche aspas duplas
+				if (m_charLido == '\n') { // Caso nao feche aspas duplas
 					System.out.println("Erro na linha " + m_line
 							+ ": esperado token \" após literal");
 					return new Token(Tag.ERRO);
@@ -144,7 +144,7 @@ public class Lexer {
 			return new Literal(s);
 		}
 
-		// A partir deste ponto, não pode haver caracteres que não estejam na
+		// A partir deste ponto, nao pode haver caracteres que nao estejam na
 		// tabela ASCII
 		if (!isValidChar(m_charLido) && m_charLido != (char)65535) {
 			System.out.println("Erro na linha " + m_line
@@ -210,8 +210,8 @@ public class Lexer {
 
 				if (!Character.isDigit(m_charLido)) {
 
-					if (i == 0) { // Se 1o caracter após '.' for algo diferente
-									// de dígito, deverá ser apontado o erro
+					if (i == 0) { // Se o caracter for algo diferente
+									// de digito, devera ser apontado o erro
 						System.out.println("Erro na linha " + m_line + ": "
 								+ "constante mal formada");
 						return new Token(Tag.ERRO);
@@ -224,9 +224,9 @@ public class Lexer {
 				x = x + (float) (Character.digit(m_charLido, 10) / d);
 				d = d * 10;
 				ultimo = Character.digit(m_charLido, 10);
-				// Notificação de overflow
-				// Não funciona em java, uma vez que não é possível determinar
-				// flags para overflow conforme especificação do IEEE-754
+				// Notificacao de overflow
+				// Nao funciona em java, uma vez que nao e possivel determinar
+				// flags para overflow conforme especificacao do IEEE-754
 				if (Float.isInfinite(x)) {
 					System.out.println("Erro linha " + m_line
 							+ ": o número não pode ser representado");
@@ -236,7 +236,7 @@ public class Lexer {
 			}
 			// Tratamento de casas decimais
 			if (i > 7) { // Floats representam entre 6 e 7 casas decimais, caso
-							// o número possua mais que esse número de casas,
+							// o número possua mais que esse numero de casas,
 							// ele é arredondado
 				System.out
 						.println("Atenção: Linha "
@@ -244,21 +244,21 @@ public class Lexer {
 								+ ": número real com mais de 7 casas decimais - o número será truncado");
 			}
 
-			// Tratamento da questão da exatidão de floats em java - apenas para
-			// melhorar a representação
+			// Tratamento da questao da exatidao de floats em java - apenas para
+			// melhorar a representacao
 			if (ultimo >= 5) {
 				x = (float) Math.ceil(x * (float) Math.pow(10, i + 1))
-						/ (float) Math.pow(10, i + 1); // o número será truncado
-														// no número de casas
+						/ (float) Math.pow(10, i + 1); // o numero sera truncado
+														// no numero de casas
 														// decimais do
-														// código-fonte com base
-														// no último dígito
+														// codigo-fonte com base
+														// no ultimo digito
 			} else if (ultimo < 5) {
 				x = (float) Math.floor(x * (float) Math.pow(10, i + 1))
 						/ (float) Math.pow(10, i + 1); // o número será truncado
-														// no número de casas
+														// no numero de casas
 														// decimais do
-														// código-fonte
+														// codigo-fonte
 			}
 			return new NumReal(x);
 
@@ -281,7 +281,7 @@ public class Lexer {
 			String s = b.toString();
 			if (b.length() >= 25) { // Caso o identificador tenha mais do que 25
 									// caracteres
-				s = s.substring(0, 24); // Identificadores não devem ter mais
+				s = s.substring(0, 24); // Identificadores nao devem ter mais
 										// que 25 caracteres
 			}
 			Word w = (Word) words.get(s);
@@ -298,12 +298,12 @@ public class Lexer {
 		return tok;
 	}
 
-	// Método para poder acessar reader a partir da main
+	// Metodo para poder acessar reader a partir da main
 	public InputStreamReader getReader() {
 		return reader;
 	}
 
-	// Método para poder acessar a tabela de símbolos através da main
+	// Metodo para poder acessar a tabela de simbolos atraves da main
 	public Hashtable<String, Token> getHashtable() {
 		return words;
 	}
