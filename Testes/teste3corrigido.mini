@@ -1,0 +1,16 @@
+program teste3corrigido
+    integer cont, qtd;
+    real media, altura, soma;
+   {
+      cont := 5;
+      soma := 0.0;
+repeat {
+        write("Altura: ");
+        read (altura);
+        soma := soma + altura;
+        cont := cont – 1;
+      }
+      until(cont);
+      write("Media: ");
+      write (soma / qtd);
+}

@@ -1,0 +1,11 @@
+program teste8corrigido
+  
+  integer a,b,c;
+  integer result;
+{
+  a := 2;
+  read (c);
+  b := 10;
+  result := (a * c + 2.123456)/(b + 5 - 1.0);
+  write(result);
+}
