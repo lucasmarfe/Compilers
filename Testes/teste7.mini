@@ -1,0 +1,12 @@
+program teste7
+  
+  integer a1b2c3d4e5678910111213141516;
+  integer result;
+{
+  read (a);
+  read (c);
+  b := 10;
+  result := (a * c)/(b + 5 - 1.);
+  write(result);
+  teste1 := -15
+}
