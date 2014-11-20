@@ -87,7 +87,7 @@ public class Lexer {
 		return true;
 	}
 
-	public Token scan() throws IOException {
+	public Token getToken() throws IOException {
 		// TODO Implementar
 
 		/**
