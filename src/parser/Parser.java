@@ -263,7 +263,7 @@ public class Parser {
 		// expressionline  ::=  relop simple-expr  |  lambda
 		switch(m_tok.m_tag)
     	{
-			case Tag.RELOP: relop(); simpleexpr(); break;
+			case Tag.RELOP: relop(); simpleexpr(); break; //TODO
 			case Tag.ABREPARENTESIS:  break;
 			case Tag.PONTOVIRGULA:  break;
 			case Tag.THEN:  break;
@@ -280,8 +280,8 @@ public class Parser {
 			case Tag.ID:
 			case Tag.REAL:
 			case Tag.INTEGER:
-			case Tag.NEGACAO:
-			case Tag.TRACO: term(); simpleexprline(); break;
+			case ('!'):
+			case ('-'): term(); simpleexprline(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
@@ -290,7 +290,9 @@ public class Parser {
 		//  simple-expr'   ::=  addop term simple-expr'
 		switch(m_tok.m_tag)
     	{
-    		case Tag.ADDOP: addop(); term(); simpleexprline(); break;
+    		case ('+'): 
+    		case ('-'): 
+    		case Tag.OR: addop(); term(); simpleexprline(); break;
     		default: error("Erro sintático, esperava encontrar: um operador de adição ");
     	}
 	}
@@ -303,8 +305,8 @@ public class Parser {
 			case Tag.ID:
 			case Tag.REAL:
 			case Tag.INTEGER:
-			case Tag.NEGACAO:
-			case Tag.TRACO: factora(); termline(); break;
+			case ('!'):
+			case ('-'): factora(); termline(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
@@ -313,8 +315,8 @@ public class Parser {
 		// term'  ::=   mulop factor-a term' 
 		switch(m_tok.m_tag)
     	{
-			case Tag.MULOP: mulop(); factora(); termline();
-			case Tag.ADDOP: break;
+			case Tag.MULOP: mulop(); factora(); termline(); //TODO
+			case Tag.ADDOP: break;   //TODO
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
@@ -346,18 +348,40 @@ public class Parser {
     	}
 	}
 
-	private void addop() {
-		// TODO Auto-generated method stub
+	private void addop() throws IOException {
+		//addop ::=  "+" | "-" | ||
+		switch(m_tok.m_tag)
+    	{
+			case ('+'): eat('+'); break;
+			case ('-'): eat('-'); break;
+			case Tag.OR: eat(Tag.OR); break;
+			default: error("Erro sintático, esperava encontrar: + - || , ");
+    	}
 		
 	}
 	
-	private void relop() {
-		// TODO Auto-generated method stub
-		
+	private void relop() throws IOException {
+		//relop ::=  "=" | ">" | ">=" | "<" | "<=" | "!="
+				switch(m_tok.m_tag)
+		    	{
+					case ('='): eat('+'); break;
+					case ('>'): eat('>'); break;
+					case ('<'): eat('<'); break;
+					case Tag.MAIOREQ: eat(Tag.MAIOREQ); break;
+					case Tag.MENOREQ: eat(Tag.MENOREQ); break;
+					case Tag.DIFERENTE: eat(Tag.DIFERENTE); break;
+					default: error("Erro sintático, esperava encontrar: + - || , ");
+		    	}
 	}
 	
-	private void mulop() {
-		// TODO Auto-generated method stub
-		
+	private void mulop() throws IOException {
+		// mulop ::=   "*" | "/" | &&
+		switch(m_tok.m_tag)
+    	{
+			case ('*'): eat('*'); break;
+			case ('/'): eat('/'); break;
+			case Tag.AND: eat(Tag.AND); break;
+			default: error("Erro sintático, esperava encontrar: + - || , ");
+    	}
 	}
 }
