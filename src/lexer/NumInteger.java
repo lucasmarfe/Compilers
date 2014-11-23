@@ -5,7 +5,7 @@ public class NumInteger extends Token{
 	public final int m_value;
 	
 	public NumInteger(int m_value) {
-		super(Tag.INTEGER_CONST);
+		super(Tag.INTEGER);
 		this.m_value = m_value;
 	}
 	

@@ -23,8 +23,6 @@ public class Tag {
 	public final static int MENOREQ = 285; // Menor igual <=
 	public final static int MAIOREQ = 287; // Maior igual >=
 	public final static int DIFERENTE = 288;//Diferente !=
-	public final static int INTEGER_CONST = 293; // Constante inteira
-	public final static int FLOAT_CONST = 294; // Constante float
 	public final static int ASSIGN = 295; //Operador assign :=
 	public final static int WRITE = 296; //write
 	public final static int BASIC = 297; //

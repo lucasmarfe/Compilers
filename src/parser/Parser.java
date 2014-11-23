@@ -32,7 +32,7 @@ public class Parser {
 	}
 
 	void error(String s) { 
-		throw new Error(s + "na linha "+m_lexer.m_line+": "); 
+		System.out.println(s + "na linha "+m_lexer.m_line+": "); 
 	}
 	
 	public void program() throws IOException {  // program ::= program identifier body
@@ -51,8 +51,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
     		case '{': 	
-    		case Tag.INTEGER:
-    		case Tag.REAL: decllist(); eat('{'); stmtlist(); eat('}');	break;
+    		case Tag.BASIC: decllist(); eat('{'); stmtlist(); eat('}');	break;
     		default: error("Erro sintático, esperava encontrar { integer ou real ");
     	}
 	}
@@ -61,8 +60,7 @@ public class Parser {
 		// decl-list ::= decl   ;   decl-list   |   lambda
 		switch(m_tok.m_tag)
     	{
-    		case Tag.INTEGER:
-    		case Tag.REAL: decl(); eat(';'); decllist();	break;
+    		case Tag.BASIC: decl(); eat(';'); decllist();	break;
     		case '}': break;
     		default: error("Erro sintático, esperava encontrar: { integer ou real, ");
     	}
@@ -72,8 +70,7 @@ public class Parser {
 		// decl ::= type ident-list
 		switch(m_tok.m_tag)
     	{
-			case Tag.INTEGER:
-			case Tag.REAL: type(); identlist();	break;
+			case Tag.BASIC: type(); identlist();	break;
 			default: error("Erro sintático, esperava encontrar: integer ou real, ");
     	}
 	}
@@ -101,7 +98,7 @@ public class Parser {
 		// type  ::= integer | real
 		switch(m_tok.m_tag)
     	{
-			case Tag.INTEGER: eat(Tag.INTEGER); break;
+			case Tag.BASIC: eat(Tag.BASIC); break;
 			case Tag.REAL: eat(Tag.REAL); break;
 			default: error("Erro sintático, esperava encontrar: integer ou real, ");
     	}
@@ -172,8 +169,7 @@ public class Parser {
     	{
 			case '(': 
 			case Tag.ID:
-			case Tag.REAL:
-			case Tag.INTEGER:
+			case Tag.BASIC:
 			case '!':
 			case '-': expression(); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
@@ -251,8 +247,7 @@ public class Parser {
     	{
 			case '(':  
 			case Tag.ID: 
-			case Tag.REAL:
-			case Tag.INTEGER:
+			case Tag.BASIC:
 			case '!':
 			case '-': simpleexpr(); expressionline(); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
@@ -283,8 +278,7 @@ public class Parser {
     	{
     		case '(':
 			case Tag.ID:
-			case Tag.REAL:
-			case Tag.INTEGER:
+			case Tag.BASIC:
 			case ('!'):
 			case ('-'): term(); simpleexprline(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
@@ -308,8 +302,7 @@ public class Parser {
     	{
     		case '(':
 			case Tag.ID:
-			case Tag.REAL:
-			case Tag.INTEGER:
+			case Tag.BASIC:
 			case ('!'):
 			case ('-'): factora(); termline(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
@@ -336,8 +329,7 @@ public class Parser {
     	{
 			case '(': 
 			case Tag.ID: 
-			case Tag.INTEGER:
-			case Tag.REAL: factor();break;
+			case Tag.BASIC: factor();break;
 			case '!': eat('!'); factor(); break;
 			case '-': eat('-'); factor(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
@@ -350,8 +342,7 @@ public class Parser {
     	{
 			
 			case Tag.ID: eat(Tag.ID); break;
-			case Tag.INTEGER: eat(Tag.INTEGER); break;
-			case Tag.REAL: eat(Tag.REAL); break;
+			case Tag.BASIC: eat(Tag.BASIC); break;
 			case '(': eat('('); expression(); eat(')'); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
