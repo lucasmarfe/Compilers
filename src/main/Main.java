@@ -16,7 +16,7 @@ public class Main {
 		Lexer m_lex = new Lexer(getNomeArquivo());
 		Parser parse = new Parser(m_lex);
 		parse.program();
-		System.out.write('\n');
+		System.out.println("Análise sintática concluída com sucesso.\n");
 		
 		/*
 		int i = 1;

@@ -179,11 +179,11 @@ public class Lexer {
 				return Word.GreaterEqual;
 			else
 				return new Token((int) '>');
-		case '=':
-			if (readch(':'))
+		case ':':
+			if (readch('='))
 				return Word.Assign;
 			else
-				return new Token((int) '=');
+				return new Token((int) ':');
 		}
 
 		// Real ou integer

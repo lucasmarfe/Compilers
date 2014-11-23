@@ -1,5 +1,8 @@
 package lexer;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 public class Tag {
 	public final static int PROGRAM = 256;
 	public final static int ID = 265; //Identificador
@@ -28,4 +31,5 @@ public class Tag {
 	public final static int BASIC = 297; //
 	public final static int ERRO = -10; // Erro
 	public final static int COMENTARIO = -11;
+	
 }

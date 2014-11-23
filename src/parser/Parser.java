@@ -1,6 +1,8 @@
 package parser;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
@@ -25,10 +27,11 @@ public class Parser {
 	
 	void eat(int t) throws IOException 
 	{
+		
 		if (m_tok.m_tag == t) 
 			advance(); 
 		else 
-			error("Erro sintático, esperava encontrar "+ m_tok.m_desc + ", ");
+			error("Erro: encontrou: "+ m_tok + " "); //esperava encontrar" + tag.toString()); TODO: não sonsegui 
 	}
 
 	void error(String s) { 
@@ -61,7 +64,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
     		case Tag.BASIC: decl(); eat(';'); decllist();	break;
-    		case '}': break;
+    		case '{': break;
     		default: error("Erro sintático, esperava encontrar: { integer ou real, ");
     	}
 	}
@@ -99,7 +102,6 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.BASIC: eat(Tag.BASIC); break;
-			case Tag.REAL: eat(Tag.REAL); break;
 			default: error("Erro sintático, esperava encontrar: integer ou real, ");
     	}
 	}
@@ -118,7 +120,7 @@ public class Parser {
 			case Tag.ELSE: break;
 			case Tag.END: break;
 			case Tag.UNTIL: break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read  write } else end until, ");
+			default: error("Erro sintático, esperava encontrar: identificador if while repeat read  write } else end until, ");
     	}
 	}
 
@@ -150,7 +152,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.IF: eat(Tag.IF); condition(); eat(Tag.THEN); stmtlist(); ifstmtline(); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: if, ");
     	}
 	}
 	private void ifstmtline() throws IOException {
@@ -159,7 +161,7 @@ public class Parser {
     	{
 			case Tag.ELSE: eat(Tag.ELSE); stmtlist(); eat(Tag.END); break;
 			case Tag.END: eat(Tag.END); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: else end, ");
     	}
 	}
 	
@@ -169,10 +171,11 @@ public class Parser {
     	{
 			case '(': 
 			case Tag.ID:
-			case Tag.BASIC:
+			case Tag.INTEGER:
+			case Tag.REAL:
 			case '!':
 			case '-': expression(); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: ( identificador constante inteira ou real ! -, ");
     	}
 	}
 	
@@ -181,7 +184,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.REPEAT: eat(Tag.REPEAT); stmtlist(); stmtsuffix(); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: repeat, ");
     	}
 	}
 	
@@ -190,7 +193,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.UNTIL: eat(Tag.UNTIL); condition(); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: until, ");
     	}
 	}
 
@@ -199,7 +202,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.WHILE: stmtprefix(); stmtlist(); eat(Tag.END); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: while, ");
     	}
 	}
 	
@@ -208,7 +211,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.WHILE:  eat(Tag.WHILE); condition(); eat(Tag.DO); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: while, ");
     	}
 	}
 
@@ -217,7 +220,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.READ:  eat(Tag.READ); eat('('); eat(Tag.ID); eat(')'); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: read, ");
     	}
 	}
 	
@@ -226,7 +229,7 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
 			case Tag.WRITE:  eat(Tag.WRITE); eat('('); writable(); eat(')'); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: write, ");
     	}
 	}
 
@@ -237,7 +240,7 @@ public class Parser {
 			case '(':  
 			case Tag.ID: simpleexpr(); break;
 			case Tag.LITERAL: eat(Tag.LITERAL); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: identificador ( literal, ");
     	}
 	}
 	
@@ -247,10 +250,11 @@ public class Parser {
     	{
 			case '(':  
 			case Tag.ID: 
-			case Tag.BASIC:
+			case Tag.INTEGER:
+			case Tag.REAL:
 			case '!':
 			case '-': simpleexpr(); expressionline(); break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: ( identificador constante inteira ou real ! -, ");
     	}
 	}
 
@@ -264,11 +268,11 @@ public class Parser {
 			case Tag.MAIOREQ: 
 			case Tag.MENOREQ: 
 			case Tag.DIFERENTE: relop(); simpleexpr(); break;
-			case '(':  break;
+			case ')':  break;
 			case ';':  break;
 			case Tag.THEN:  break;
 			case Tag.DO:  break;
-			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
+			default: error("Erro sintático, esperava encontrar: = > < >= <= ( ; then do, ");
     	}
 	}
 
@@ -278,7 +282,8 @@ public class Parser {
     	{
     		case '(':
 			case Tag.ID:
-			case Tag.BASIC:
+			case Tag.INTEGER:
+			case Tag.REAL:
 			case ('!'):
 			case ('-'): term(); simpleexprline(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
@@ -286,13 +291,23 @@ public class Parser {
 	}
 
 	private void simpleexprline() throws IOException {
-		//  simple-expr'   ::=  addop term simple-expr'
+		//  simple-expr'   ::=  addop term simple-expr' | lambda
 		switch(m_tok.m_tag)
     	{
     		case ('+'): 
     		case ('-'): 
     		case Tag.OR: addop(); term(); simpleexprline(); break;
-    		default: error("Erro sintático, esperava encontrar: um operador de adição ");
+    		case(')'):
+    		case(Tag.THEN):
+    		case Tag.DO:
+    		case (';'):
+    		case ('='): 
+			case ('>'): 
+			case ('<'): 
+			case Tag.MAIOREQ: 
+			case Tag.MENOREQ: 
+			case Tag.DIFERENTE: break;
+    		default: error("Erro sintático, esperava encontrar: um operador + - OR ) then do ; = , > <= >= !=");
     	}
 	}
 
@@ -302,24 +317,35 @@ public class Parser {
     	{
     		case '(':
 			case Tag.ID:
-			case Tag.BASIC:
+			case Tag.INTEGER:
+			case Tag.REAL:
 			case ('!'):
 			case ('-'): factora(); termline(); break;
-			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
+			default: error("Erro sintático, esperava encontrar: ( identificador real inteiro ! - , ");
     	}
 	}
 
 	private void termline() throws IOException {
-		// term'  ::=   mulop factor-a term' 
+		// term'  ::=   mulop factor-a term' | lambda
 		switch(m_tok.m_tag)
     	{
 	    	case ('*'): 
 			case ('/'): 
 			case Tag.AND: mulop(); factora(); termline(); 
-			case ('+'): eat('+'); break;
-			case ('-'): eat('-'); break;
-			case Tag.OR: eat(Tag.OR); break;
-			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
+			case ('+'):
+			case ('-'): 
+			case Tag.OR: 
+			case(')'):
+    		case(Tag.THEN):
+    		case Tag.DO:
+    		case (';'):
+    		case ('='): 
+			case ('>'): 
+			case ('<'): 
+			case Tag.MAIOREQ: 
+			case Tag.MENOREQ: 
+			case Tag.DIFERENTE: break;
+			default: error("Erro sintático, esperava encontrar: * / AND + - OR, ");
     	}
 	}
 
@@ -329,10 +355,11 @@ public class Parser {
     	{
 			case '(': 
 			case Tag.ID: 
-			case Tag.BASIC: factor();break;
+			case Tag.INTEGER:
+			case Tag.REAL: factor(); break;
 			case '!': eat('!'); factor(); break;
 			case '-': eat('-'); factor(); break;
-			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
+			default: error("Erro sintático, esperava encontrar: ( identificador real inteiro ! - , ");
     	}
 	}
 
@@ -342,9 +369,10 @@ public class Parser {
     	{
 			
 			case Tag.ID: eat(Tag.ID); break;
-			case Tag.BASIC: eat(Tag.BASIC); break;
+			case Tag.INTEGER: eat(Tag.INTEGER); break;
+			case Tag.REAL: eat(Tag.REAL); break;
 			case '(': eat('('); expression(); eat(')'); break;
-			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
+			default: error("Erro sintático, esperava encontrar: identificador real inteiro (, ");
     	}
 	}
 
@@ -370,7 +398,7 @@ public class Parser {
 					case Tag.MAIOREQ: eat(Tag.MAIOREQ); break;
 					case Tag.MENOREQ: eat(Tag.MENOREQ); break;
 					case Tag.DIFERENTE: eat(Tag.DIFERENTE); break;
-					default: error("Erro sintático, esperava encontrar: + - || , ");
+					default: error("Erro sintático, esperava encontrar: = > < >= <= !=, ");
 		    	}
 	}
 	
@@ -381,7 +409,7 @@ public class Parser {
 			case ('*'): eat('*'); break;
 			case ('/'): eat('/'); break;
 			case Tag.AND: eat(Tag.AND); break;
-			default: error("Erro sintático, esperava encontrar: + - || , ");
+			default: error("Erro sintático, esperava encontrar: * / AND, ");
     	}
 	}
 }
