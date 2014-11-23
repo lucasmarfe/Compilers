@@ -50,9 +50,9 @@ public class Parser {
 		// body ::= decl-list “ {“ stmt-list “}”
 		switch(m_tok.m_tag)
     	{
-    		case Tag.ABRECHAVES: 	
+    		case '{': 	
     		case Tag.INTEGER:
-    		case Tag.REAL: decllist(); eat(Tag.ABRECHAVES); stmtlist(); eat(Tag.FECHACHAVES);	break;
+    		case Tag.REAL: decllist(); eat('{'); stmtlist(); eat('}');	break;
     		default: error("Erro sintático, esperava encontrar { integer ou real ");
     	}
 	}
@@ -62,8 +62,8 @@ public class Parser {
 		switch(m_tok.m_tag)
     	{
     		case Tag.INTEGER:
-    		case Tag.REAL: decl(); eat(Tag.PONTOVIRGULA); decllist();	break;
-    		case Tag.FECHACHAVES: break;
+    		case Tag.REAL: decl(); eat(';'); decllist();	break;
+    		case '}': break;
     		default: error("Erro sintático, esperava encontrar: { integer ou real, ");
     	}
 	}
@@ -91,8 +91,8 @@ public class Parser {
 		// ident-list' ::= ,  identifier  ident-list'   |   lambda
 		switch(m_tok.m_tag)
     	{
-			case Tag.VIRGULA: eat(Tag.VIRGULA); eat(Tag.ID); identlistline();	break;
-			case Tag.PONTOVIRGULA: break;
+			case ',': eat(','); eat(Tag.ID); identlistline();	break;
+			case ';': break;
 			default: error("Erro sintático, esperava encontrar: integer ou real, ");
     	}
 	}
@@ -116,8 +116,8 @@ public class Parser {
 			case Tag.WHILE:
 			case Tag.REPEAT:
 			case Tag.READ:
-			case Tag.WRITE: stmt(); eat(Tag.PONTOVIRGULA); stmtlist();
-			case Tag.FECHACHAVES: break;
+			case Tag.WRITE: stmt(); eat(';'); stmtlist();
+			case '}': break;
 			case Tag.ELSE: break;
 			case Tag.END: break;
 			case Tag.UNTIL: break;
@@ -170,12 +170,12 @@ public class Parser {
 		// condition ::= expression
 		switch(m_tok.m_tag)
     	{
-			case Tag.ABREPARENTESIS: 
+			case '(': 
 			case Tag.ID:
 			case Tag.REAL:
 			case Tag.INTEGER:
-			case Tag.NEGACAO:
-			case Tag.TRACO: expression(); break;
+			case '!':
+			case '-': expression(); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
     	}
 	}
@@ -220,7 +220,7 @@ public class Parser {
 		// read-stmt ::= read "(" identifier ")"
 		switch(m_tok.m_tag)
     	{
-			case Tag.READ:  eat(Tag.READ); eat(Tag.ABREPARENTESIS); eat(Tag.ID); eat(Tag.FECHAPARENTESIS); break;
+			case Tag.READ:  eat(Tag.READ); eat('('); eat(Tag.ID); eat(')'); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
     	}
 	}
@@ -229,7 +229,7 @@ public class Parser {
 		// write-stmt  ::=   write "(" writable ")"
 		switch(m_tok.m_tag)
     	{
-			case Tag.WRITE:  eat(Tag.WRITE); eat(Tag.ABREPARENTESIS); writable(); eat(Tag.FECHAPARENTESIS); break;
+			case Tag.WRITE:  eat(Tag.WRITE); eat('('); writable(); eat(')'); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
     	}
 	}
@@ -238,7 +238,7 @@ public class Parser {
 		// writable  ::=  simple-expr | literal
 		switch(m_tok.m_tag)
     	{
-			case Tag.ABREPARENTESIS:  
+			case '(':  
 			case Tag.ID: simpleexpr(); break;
 			case Tag.LITERAL: eat(Tag.LITERAL); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
@@ -249,12 +249,12 @@ public class Parser {
 		// expression ::= simple-expr expression'
 		switch(m_tok.m_tag)
     	{
-			case Tag.ABREPARENTESIS:  
+			case '(':  
 			case Tag.ID: 
 			case Tag.REAL:
 			case Tag.INTEGER:
-			case Tag.NEGACAO:
-			case Tag.TRACO: simpleexpr(); expressionline(); break;
+			case '!':
+			case '-': simpleexpr(); expressionline(); break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
     	}
 	}
@@ -263,9 +263,14 @@ public class Parser {
 		// expressionline  ::=  relop simple-expr  |  lambda
 		switch(m_tok.m_tag)
     	{
-			case Tag.RELOP: relop(); simpleexpr(); break; //TODO
-			case Tag.ABREPARENTESIS:  break;
-			case Tag.PONTOVIRGULA:  break;
+	    	case ('='): 
+			case ('>'): 
+			case ('<'): 
+			case Tag.MAIOREQ: 
+			case Tag.MENOREQ: 
+			case Tag.DIFERENTE: relop(); simpleexpr(); break;
+			case '(':  break;
+			case ';':  break;
 			case Tag.THEN:  break;
 			case Tag.DO:  break;
 			default: error("Erro sintático, esperava encontrar: identificador if whilw repeat read ou write, ");
@@ -276,7 +281,7 @@ public class Parser {
 		//  simple-expr  ::=  term simple-expr'
 		switch(m_tok.m_tag)
     	{
-    		case Tag.ABREPARENTESIS:
+    		case '(':
 			case Tag.ID:
 			case Tag.REAL:
 			case Tag.INTEGER:
@@ -301,7 +306,7 @@ public class Parser {
 		// term  ::=  factor-a term'
 		switch(m_tok.m_tag)
     	{
-    		case Tag.ABREPARENTESIS:
+    		case '(':
 			case Tag.ID:
 			case Tag.REAL:
 			case Tag.INTEGER:
@@ -315,8 +320,12 @@ public class Parser {
 		// term'  ::=   mulop factor-a term' 
 		switch(m_tok.m_tag)
     	{
-			case Tag.MULOP: mulop(); factora(); termline(); //TODO
-			case Tag.ADDOP: break;   //TODO
+	    	case ('*'): 
+			case ('/'): 
+			case Tag.AND: mulop(); factora(); termline(); 
+			case ('+'): eat('+'); break;
+			case ('-'): eat('-'); break;
+			case Tag.OR: eat(Tag.OR); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
@@ -325,12 +334,12 @@ public class Parser {
 		// fator-a  ::=  factor | ! factor | "-" factor
 		switch(m_tok.m_tag)
     	{
-			case Tag.ABREPARENTESIS: 
+			case '(': 
 			case Tag.ID: 
 			case Tag.INTEGER:
 			case Tag.REAL: factor();break;
-			case Tag.NEGACAO: eat(Tag.NEGACAO); factor(); break;
-			case Tag.TRACO: eat(Tag.TRACO); factor(); break;
+			case '!': eat('!'); factor(); break;
+			case '-': eat('-'); factor(); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
@@ -343,7 +352,7 @@ public class Parser {
 			case Tag.ID: eat(Tag.ID); break;
 			case Tag.INTEGER: eat(Tag.INTEGER); break;
 			case Tag.REAL: eat(Tag.REAL); break;
-			case Tag.ABREPARENTESIS: eat(Tag.ABREPARENTESIS); expression(); eat(Tag.FECHAPARENTESIS); break;
+			case '(': eat('('); expression(); eat(')'); break;
 			default: error("Erro sintático, esperava encontrar: ) identificador real inteiro ! - , ");
     	}
 	}
