@@ -68,8 +68,8 @@ public class Lexer {
 			stream = new FileInputStream(arq_fonte);
 			reader = new InputStreamReader(stream);
 		} catch (FileNotFoundException e) {
-			System.out.println("Arquivo não encontrado");
-			throw e;
+			System.out.println("Arquivo nao encontrado");
+			//throw e;
 		}
 	}
 
