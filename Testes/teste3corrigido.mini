@@ -4,11 +4,12 @@ program teste3corrigido
    {
       cont := 5;
       soma := 0.0;
-repeat
+repeat {
         write("Altura: ");
         read (altura);
         soma := soma + altura;
-        cont := cont + 1;
+        cont := cont – 1;
+      }
       until(cont);
       write("Media: ");
       write (soma / qtd);

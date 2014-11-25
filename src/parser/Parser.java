@@ -31,7 +31,7 @@ public class Parser {
 		if (m_tok.m_tag == t) 
 			advance(); 
 		else 
-			error("Erro: token atual: "+ m_tok + " "); //esperava encontrar" + tag.toString()); TODO: não sonsegui 
+			error("Erro: encontrou: "+ m_tok + " "); //esperava encontrar" + tag.toString()); TODO: não sonsegui 
 	}
 
 	void error(String s) { 
@@ -345,7 +345,7 @@ public class Parser {
 			case Tag.MAIOREQ: 
 			case Tag.MENOREQ: 
 			case Tag.DIFERENTE: break;
-			default: error("Erro sintático, esperava encontrar: * / AND + - OR = ; < > <= >= !=, ");
+			default: error("Erro sintático, esperava encontrar: * / AND + - OR, ");
     	}
 	}
 
