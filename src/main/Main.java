@@ -30,17 +30,17 @@ public class Main {
 			System.out.println("Token " + i + ": " + "<" + tokens + ","
 					+ tokens.m_tag + ">");
 			i++;
-		}
+		}*/
 		System.out.println("----------------------\n");
 		System.out.println("\n\nTabela de Símbolos");
 		System.out.println("----------------------");
 		Set<String> keys = m_lex.getHashtable().keySet();
 		for (String aux : keys) {
-			System.out.println(m_lex.getHashtable().get(aux));
+			System.out.println(m_lex.getHashtable().get(aux).toString());
 		}
 		System.out.println("----------------------");
 		System.out.println("\nFim");
-		*/
+		
 	}
 
 	private static String getNomeArquivo() {
