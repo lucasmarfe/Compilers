@@ -59,7 +59,7 @@ public class Lexer {
 		addReserveWords(Type.Int);
 		addReserveWords(Type.Real);
 
-		// Adiciona os delimitadores a� lista de delimitadores:
+		// Adiciona os delimitadores a� lista de delimitadores:
 		Delimitadores.add(' ');
 		Delimitadores.add('\t');
 		Delimitadores.add('\r');
@@ -111,7 +111,7 @@ public class Lexer {
 
 				if (m_charLido == '\n') {
 					m_line++;
-					return new Token(Tag.COMENTARIO, coment.toString());
+					//return new Token(Tag.COMENTARIO, coment.toString()); // Não é necessário na implementação do Sintático
 
 				}
 			}
