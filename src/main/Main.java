@@ -16,7 +16,10 @@ public class Main {
 		Lexer m_lex = new Lexer(getNomeArquivo());
 		Parser parse = new Parser(m_lex);
 		parse.program();
-		System.out.println("Análise sintática concluída com sucesso.\n");
+		if(parse.getNumErros() == 0)
+		System.out.println("Analise sintatica concluida com sucesso.\n");
+		else
+		System.out.println("Analise sintatica concluida com " + parse.getNumErros() + " erros.");	
 		
 		/*
 		int i = 1;
