@@ -14,7 +14,7 @@ public class Word extends Token{
 		return m_lexema;
 	}
 	//Criacao de palavras reservadas com suas respectivas tags
-	public static final Word NotEqual = new Word( "!=", Tag.NEQ );
+	public static final Word NotEqual = new Word( "!=", Tag.DIFERENTE );
 	public static final Word Assign = new Word( ":=", Tag.ASSIGN );
 	public static final Word LessEqual= new Word( "<=", Tag.MENOREQ );
 	public static final Word GreaterEqual = new Word( ">=", Tag.MAIOREQ );

@@ -5,7 +5,7 @@ public class NumReal extends Token {
 	public final float m_value;
 	
 	public NumReal(float m_value) {
-		super(Tag.FLOAT_CONST);
+		super(Tag.REAL);
 		this.m_value = m_value;
 	}
 	

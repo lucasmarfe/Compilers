@@ -1,5 +1,8 @@
 package lexer;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 public class Tag {
 	public final static int PROGRAM = 256;
 	public final static int ID = 265; //Identificador
@@ -22,12 +25,11 @@ public class Tag {
 	public final static int	AND = 282; //Operador && and
 	public final static int MENOREQ = 285; // Menor igual <=
 	public final static int MAIOREQ = 287; // Maior igual >=
-	public final static int NEQ = 288;//Diferente !=
-	public final static int INTEGER_CONST = 293; // Constante inteira
-	public final static int FLOAT_CONST = 294; // Constante float
+	public final static int DIFERENTE = 288;//Diferente !=
 	public final static int ASSIGN = 295; //Operador assign :=
 	public final static int WRITE = 296; //write
 	public final static int BASIC = 297; //
 	public final static int ERRO = -10; // Erro
 	public final static int COMENTARIO = -11;
+	
 }
