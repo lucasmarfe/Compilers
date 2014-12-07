@@ -1,4 +1,5 @@
 program teste2corrigido
+%declarando
   integer a;
   integer b;
   real c;

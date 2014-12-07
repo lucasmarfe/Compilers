@@ -6,7 +6,6 @@ program teste7corrigido
   read (a);
   read (c);
   b := 10;
-  result := (a * c)/(b + 5);
-  write(result);
-  
+  result := (a * c)/(b + 5 - 1.0);
+  write(result); 
 }
