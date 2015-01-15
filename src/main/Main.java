@@ -15,11 +15,20 @@ public class Main {
 				
 		Lexer m_lex = new Lexer(getNomeArquivo());
 		Parser parse = new Parser(m_lex);
-		parse.program();
-		if(parse.getNumErros() == 0)
+		boolean is_OK = true;
+		try
+		{
+			parse.program();
+		}
+		catch(Exception E)
+		{
+			is_OK = false;
+			System.out.println(E.getMessage());
+		}
+		if(parse.getNumErros() == 0 && is_OK)
 		System.out.println("Analise sintatica concluida com sucesso.\n");
 		else
-		System.out.println("Analise sintatica concluida com " + parse.getNumErros() + " erros.");	
+		System.out.println("Analise sintatica concluida com " + (parse.getNumErros()==0 ? "":parse.getNumErros() )+ " erros.");	
 		
 		/*
 		int i = 1;
@@ -31,7 +40,7 @@ public class Main {
 					+ tokens.m_tag + ">");
 			i++;
 		}*/
-		System.out.println("----------------------\n");
+		/*System.out.println("----------------------\n");
 		System.out.println("\n\nTabela de Símbolos");
 		System.out.println("----------------------");
 		Set<String> keys = m_lex.getHashtable().keySet();
@@ -40,7 +49,7 @@ public class Main {
 		}
 		System.out.println("----------------------");
 		System.out.println("\nFim");
-		
+		*/
 	}
 
 	private static String getNomeArquivo() {

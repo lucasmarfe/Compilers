@@ -1,7 +1,7 @@
 program teste5corrigido
    %Este e um programa com if
         integer j, k;
-        real a, j1;
+        real a, j;
 {
 read(j);
 read(k);

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
+import lexer.Word;
 
 public class Parser {
 
@@ -59,7 +60,7 @@ public class Parser {
 		
 	}
 
-	public void program() throws IOException { // program ::= program identifier
+	public void program() throws Exception { // program ::= program identifier
 												// body
 		prod_atual = 1;
 		switch (m_tok.m_tag) {
@@ -73,7 +74,7 @@ public class Parser {
 		}
 	}
 
-	private void body() throws IOException {
+	private void body() throws Exception {
 		// body ::= decl-list � {� stmt-list �}�
 		
 		prod_atual = 2;
@@ -90,7 +91,7 @@ public class Parser {
 		}
 	}
 
-	private void decllist() throws IOException {
+	private void decllist() throws Exception {
 		// decl-list ::= decl ; decl-list | lambda
 		prod_atual = 3;
 		switch (m_tok.m_tag) {
@@ -106,7 +107,7 @@ public class Parser {
 		}
 	}
 
-	private void decl() throws IOException {
+	private void decl() throws Exception {
 		// decl ::= type ident-list
 		prod_atual = 4;
 		switch (m_tok.m_tag) {
@@ -119,11 +120,14 @@ public class Parser {
 		}
 	}
 
-	private void identlist() throws IOException {
+	private void identlist() throws Exception {
 		// ident-list ::= identifier ident-list '
 		prod_atual = 5;
 		switch (m_tok.m_tag) {
 		case Tag.ID:
+			if(m_lexer.getHashtable().containsKey(((Word)m_tok).m_lexema))
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+				
 			eat(Tag.ID);
 			identlistline();
 			break;
@@ -132,12 +136,14 @@ public class Parser {
 		}
 	}
 
-	private void identlistline() throws IOException {
+	private void identlistline() throws Exception {
 		// ident-list' ::= , identifier ident-list' | lambda
 		prod_atual = 6;
 		switch (m_tok.m_tag) {
 		case ',':
 			eat(',');
+			if(m_lexer.getHashtable().containsKey(((Word)m_tok).m_lexema))
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
 			eat(Tag.ID);
 			identlistline();
 			break;
@@ -215,7 +221,7 @@ public class Parser {
 		}
 	}
 
-	private void assignstmt() throws IOException {
+	private void assignstmt() throws IOException { //TODO Verificar se variavel foi declarada
 		// assign-stmt ::= identifier ":=" simple_expr
 		prod_atual = 10;
 		switch (m_tok.m_tag) {
@@ -334,7 +340,7 @@ public class Parser {
 		}
 	}
 
-	private void readstmt() throws IOException {
+	private void readstmt() throws IOException { //TODO Verificar se variavel foi declarada
 		// read-stmt ::= read "(" identifier ")"
 		prod_atual = 18;
 		switch (m_tok.m_tag) {
@@ -543,7 +549,7 @@ public class Parser {
 		}
 	}
 
-	private void factor() throws IOException {
+	private void factor() throws IOException { //TODO Verificar se variavel foi declarada
 		// factor ::= identifier | constant | "(" expression ")"
 		prod_atual = 28;
 		switch (m_tok.m_tag) {
