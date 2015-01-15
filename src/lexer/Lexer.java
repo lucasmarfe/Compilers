@@ -88,8 +88,6 @@ public class Lexer {
 	}
 
 	public Token getToken() throws IOException {
-		// TODO Implementar
-
 		/**
 		 * Desconsidera espaços em branco, tabulações, quebra de linha e
 		 * comentário de uma linha
@@ -285,7 +283,9 @@ public class Lexer {
 										// que 25 caracteres
 			}
 			Word w = (Word) words.get(s);
+			
 			if (w != null) {
+				w.is_First_Time = false;
 				return w;
 			}
 			w = new Word(s, Tag.ID);

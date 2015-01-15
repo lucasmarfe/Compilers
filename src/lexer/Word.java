@@ -1,12 +1,20 @@
 package lexer;
 
+import symbols.Type;
+
 public class Word extends Token{
 	
 	public String m_lexema = "";
+	public Boolean is_First_Time;
+	public Boolean was_Declared;
+	
+	public Type m_Tipo = null;
 	
 	public Word(String m_cadeia, int m_tag) {
 		super(m_tag);
 		this.m_lexema = m_cadeia;
+		is_First_Time = true;
+		was_Declared = false;
 	}
 	
 	@Override

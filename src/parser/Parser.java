@@ -1,7 +1,8 @@
 package parser;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
+
+import symbols.Type;
 
 import lexer.Lexer;
 import lexer.Tag;
@@ -11,24 +12,24 @@ import lexer.Word;
 public class Parser {
 
 	private Token m_tok;
-
+	
 	private Lexer m_lexer;
 	
 	private int num_erros = 0;
 	
 	private int prod_atual; //Apenas para auxiliar na verificaÃ§Ã£o do parser
 
-	public Parser(Lexer lex) throws IOException {
+	public Parser(Lexer lex) throws Exception {
 		m_lexer = lex;
 		advance();
 	}
 
-	Token advance() throws IOException {
+	Token advance() throws Exception {
 		m_tok = m_lexer.getToken();
 		return m_tok;
 	}
 
-	void eat(int t) throws IOException {
+	void eat(int t) throws Exception {
 
 		if (m_tok.m_tag == t)
 			advance();
@@ -38,7 +39,7 @@ public class Parser {
 
 	void error(String follow) {
 		num_erros++;
-		System.out.println("Erro SintÃ¡tico na produÃ§Ã£o " + prod_atual +  ": " + "Esperava encontrar: " + follow + " Encontrado: " +  m_tok.toString() + " na linha " + m_lexer.m_line);
+		System.out.println("Erro Sintatico na producao " + prod_atual +  ": " + "Esperava encontrar: " + follow + " Encontrado: " +  m_tok.toString() + " na linha " + m_lexer.m_line);
 	}
 	
 	
@@ -51,7 +52,7 @@ public class Parser {
 		return -1; // nÃ£o encontrado
 	}
 	
-	void skipto(int []sync) throws IOException{
+	void skipto(int []sync) throws Exception{
 		do{
 			if(m_lexer.getReader().ready())	
 			advance();
@@ -112,22 +113,26 @@ public class Parser {
 		prod_atual = 4;
 		switch (m_tok.m_tag) {
 		case Tag.BASIC:
-			type();
-			identlist();
+			Type l_type = type();
+			identlist(l_type);
 			break;
 		default:
 			error("integer ou real");
 		}
 	}
 
-	private void identlist() throws Exception {
+	private void identlist(Type p_type) throws Exception {
 		// ident-list ::= identifier ident-list '
 		prod_atual = 5;
 		switch (m_tok.m_tag) {
 		case Tag.ID:
-			if(m_lexer.getHashtable().containsKey(((Word)m_tok).m_lexema))
+			if(! (((Word)m_tok).is_First_Time))
 				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
-				
+			else
+			{
+				((Word)m_tok).was_Declared = true;
+				((Word)m_tok).m_Tipo = p_type;
+			}
 			eat(Tag.ID);
 			identlistline();
 			break;
@@ -142,8 +147,11 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case ',':
 			eat(',');
-			if(m_lexer.getHashtable().containsKey(((Word)m_tok).m_lexema))
+			if(! (((Word)m_tok).is_First_Time))
 				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+			else
+				((Word)m_tok).was_Declared = true;
+			
 			eat(Tag.ID);
 			identlistline();
 			break;
@@ -154,19 +162,24 @@ public class Parser {
 		}
 	}
 
-	private void type() throws IOException {
+	private Type type() throws Exception {
 		// type ::= integer | real
 		prod_atual = 7;
 		switch (m_tok.m_tag) {
 		case Tag.BASIC:
+			Token l_aux =m_tok;
 			eat(Tag.BASIC);
-			break;
+			if(((Word)l_aux).m_lexema.equals("integer"))
+				return Type.Int;
+			if(((Word)l_aux).m_lexema.equals("real"))
+				return Type.Real;
 		default:
 			error("integer ou real");
 		}
+		return null;
 	}
 
-	private void stmtlist() throws IOException {
+	private void stmtlist() throws Exception {
 		// stmt-list ::= stmt ; stmt-list | lambda
 		prod_atual = 8;
 		switch (m_tok.m_tag) {
@@ -193,7 +206,7 @@ public class Parser {
 		}
 	}
 
-	private void stmt() throws IOException {
+	private void stmt() throws Exception {
 		// stmt ::= assign-stmt | if-stmt | while-stmt | repeat-stmt | read-stmt
 		// | write-stmt
 		prod_atual = 9;
@@ -221,21 +234,26 @@ public class Parser {
 		}
 	}
 
-	private void assignstmt() throws IOException { //TODO Verificar se variavel foi declarada
+	private void assignstmt() throws Exception { //TODO Verificar se variavel foi declarada - OK
 		// assign-stmt ::= identifier ":=" simple_expr
 		prod_atual = 10;
 		switch (m_tok.m_tag) {
 		case Tag.ID:
+			if(! (((Word)m_tok).was_Declared))
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" não declarada.");
+			Type l_typeID = m_tok instanceof Word ? ((Word)m_tok).m_Tipo : null;
 			eat(Tag.ID);
 			eat(Tag.ASSIGN);
-			simpleexpr();
+			Type l_typeExp = simpleexpr();
+			if (l_typeID!= null && l_typeID.equals(Type.Int) && l_typeExp.equals(Type.Real))
+				System.out.println("Warning: Possível atribuição de um valor real a uma varíavel inteira na linha " + m_lexer.m_line);
 			break;
 		default:
 			error("identificador, if, while, repeat, read ou write");
 		}
 	}
 
-	private void ifstmt() throws IOException {
+	private void ifstmt() throws Exception {
 		// if-stmt ::= if condition then stmt-list if-stmt
 		prod_atual = 11;
 		switch (m_tok.m_tag) {
@@ -251,7 +269,7 @@ public class Parser {
 		}
 	}
 
-	private void ifstmtline() throws IOException {
+	private void ifstmtline() throws Exception {
 		// if-stmt ' ::= else stmt-list end | end
 		prod_atual = 12;
 		switch (m_tok.m_tag) {
@@ -268,7 +286,7 @@ public class Parser {
 		}
 	}
 
-	private void condition() throws IOException {
+	private void condition() throws Exception {
 		// condition ::= expression
 		prod_atual = 13;
 		switch (m_tok.m_tag) {
@@ -285,7 +303,7 @@ public class Parser {
 		}
 	}
 
-	private void repeatstmt() throws IOException {
+	private void repeatstmt() throws Exception {
 		// repeat-stmt ::= repeat stmt-list stmt-suffix
 		prod_atual = 14;
 		switch (m_tok.m_tag) {
@@ -299,7 +317,7 @@ public class Parser {
 		}
 	}
 
-	private void stmtsuffix() throws IOException {
+	private void stmtsuffix() throws Exception {
 		// stmt-suffix ::= until condition
 		prod_atual = 15;
 		switch (m_tok.m_tag) {
@@ -312,7 +330,7 @@ public class Parser {
 		}
 	}
 
-	private void whilestmt() throws IOException {
+	private void whilestmt() throws Exception {
 		// while-stmt ::= stmt-prefix stmt-list end
 		prod_atual = 16;
 		switch (m_tok.m_tag) {
@@ -326,7 +344,7 @@ public class Parser {
 		}
 	}
 
-	private void stmtprefix() throws IOException {
+	private void stmtprefix() throws Exception {
 		// stmt-prefix ::= while condition do
 		prod_atual = 17;
 		switch (m_tok.m_tag) {
@@ -340,13 +358,15 @@ public class Parser {
 		}
 	}
 
-	private void readstmt() throws IOException { //TODO Verificar se variavel foi declarada
+	private void readstmt() throws Exception { //TODO Verificar se variavel foi declarada - OK
 		// read-stmt ::= read "(" identifier ")"
 		prod_atual = 18;
 		switch (m_tok.m_tag) {
 		case Tag.READ:
 			eat(Tag.READ);
 			eat('(');
+			if(! (((Word)m_tok).was_Declared))
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" não declarada.");
 			eat(Tag.ID);
 			eat(')');
 			break;
@@ -355,7 +375,7 @@ public class Parser {
 		}
 	}
 
-	private void writestmt() throws IOException {
+	private void writestmt() throws Exception {
 		// write-stmt ::= write "(" writable ")"
 		prod_atual = 19;
 		switch (m_tok.m_tag) {
@@ -370,7 +390,7 @@ public class Parser {
 		}
 	}
 
-	private void writable() throws IOException {
+	private void writable() throws Exception {
 		// writable ::= simple-expr | literal
 		prod_atual = 20;
 		switch (m_tok.m_tag) {
@@ -386,7 +406,7 @@ public class Parser {
 		}
 	}
 
-	private void expression() throws IOException {
+	private void expression() throws Exception {
 		// expression ::= simple-expr expression'
 		prod_atual = 21;
 		switch (m_tok.m_tag) {
@@ -404,7 +424,7 @@ public class Parser {
 		}
 	}
 
-	private void expressionline() throws IOException {
+	private void expressionline() throws Exception {
 		// expressionline ::= relop simple-expr | lambda
 		prod_atual = 22;
 		switch (m_tok.m_tag) {
@@ -430,7 +450,7 @@ public class Parser {
 		}
 	}
 
-	private void simpleexpr() throws IOException {
+	private Type simpleexpr() throws Exception {
 		// simple-expr ::= term simple-expr'
 		prod_atual = 23;
 		switch (m_tok.m_tag) {
@@ -440,15 +460,16 @@ public class Parser {
 		case Tag.REAL:
 		case ('!'):
 		case ('-'):
-			term();
+			Type l_return = term();
 			simpleexprline();
-			break;
+			return l_return;
 		default:
 			error("')', identificador, real, inteiro, '!', '-'");
 		}
+		return Type.Int;
 	}
 
-	private void simpleexprline() throws IOException {
+	private void simpleexprline() throws Exception {
 		// simple-expr' ::= addop term simple-expr' | lambda
 		prod_atual = 24;
 		switch (m_tok.m_tag) {
@@ -477,7 +498,7 @@ public class Parser {
 		}
 	}
 
-	private void term() throws IOException {
+	private Type term() throws Exception {
 		// term ::= factor-a term'
 		prod_atual = 25;
 		switch (m_tok.m_tag) {
@@ -488,14 +509,15 @@ public class Parser {
 		case ('!'):
 		case ('-'):
 			factora();
-			termline();
-			break;
+			Type l_return = termline();
+			return l_return;
 		default:
 			error("'(', identificador, real, inteiro, '!', '-'");
 		}
+		return Type.Int;
 	}
 
-	private void termline() throws IOException {
+	private Type termline() throws Exception {
 		// term' ::= mulop factor-a term' | lambda
 		prod_atual = 26;
 		switch (m_tok.m_tag) {
@@ -505,6 +527,7 @@ public class Parser {
 			mulop();
 			factora();
 			termline();
+			return Type.Real;
 		case ('+'):
 		case ('-'):
 		case Tag.OR:
@@ -524,9 +547,10 @@ public class Parser {
 			error("'+', '-', OR, ')', then, do, ';', '=', '>', '<=', '>=', '!='");
 			//skipto(follow);
 		}
+		return Type.Int;
 	}
 
-	private void factora() throws IOException {
+	private void factora() throws Exception {
 		// fator-a ::= factor | ! factor | "-" factor
 		prod_atual = 27;
 		switch (m_tok.m_tag) {
@@ -549,12 +573,14 @@ public class Parser {
 		}
 	}
 
-	private void factor() throws IOException { //TODO Verificar se variavel foi declarada
+	private void factor() throws Exception { //TODO Verificar se variavel foi declarada
 		// factor ::= identifier | constant | "(" expression ")"
 		prod_atual = 28;
 		switch (m_tok.m_tag) {
 
 		case Tag.ID:
+			if(! (((Word)m_tok).was_Declared))
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" não declarada.");
 			eat(Tag.ID);
 			break;
 		case Tag.INTEGER:
@@ -573,7 +599,7 @@ public class Parser {
 		}
 	}
 
-	private void addop() throws IOException {
+	private void addop() throws Exception {
 		// addop ::= "+" | "-" | ||
 		prod_atual = 29;
 		switch (m_tok.m_tag) {
@@ -592,7 +618,7 @@ public class Parser {
 
 	}
 
-	private void relop() throws IOException {
+	private void relop() throws Exception {
 		// relop ::= "=" | ">" | ">=" | "<" | "<=" | "!="
 		prod_atual = 30;
 		switch (m_tok.m_tag) {
@@ -619,7 +645,7 @@ public class Parser {
 		}
 	}
 
-	private void mulop() throws IOException {
+	private void mulop() throws Exception {
 		// mulop ::= "*" | "/" | &&
 		prod_atual = 31;
 		switch (m_tok.m_tag) {

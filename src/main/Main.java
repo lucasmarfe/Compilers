@@ -14,10 +14,11 @@ public class Main {
 		//Token tokens;
 				
 		Lexer m_lex = new Lexer(getNomeArquivo());
-		Parser parse = new Parser(m_lex);
 		boolean is_OK = true;
+		Parser parse = null;
 		try
 		{
+			parse = new Parser(m_lex);
 			parse.program();
 		}
 		catch(Exception E)
@@ -26,9 +27,9 @@ public class Main {
 			System.out.println(E.getMessage());
 		}
 		if(parse.getNumErros() == 0 && is_OK)
-		System.out.println("Analise sintatica concluida com sucesso.\n");
+		System.out.println("Analise concluida com sucesso.\n");
 		else
-		System.out.println("Analise sintatica concluida com " + (parse.getNumErros()==0 ? "":parse.getNumErros() )+ " erros.");	
+		System.out.println("Analise concluida com " + (parse.getNumErros()==0 ? "":parse.getNumErros() )+ " erro.");	
 		
 		/*
 		int i = 1;
