@@ -277,6 +277,17 @@ public class Parser {
 					}
 				}
 			}
+			else{
+					String aux = ids.get(1);
+					for(int i = 1; i < ids.size(); i++){
+						if(!ids.get(i).equalsIgnoreCase(aux)){
+							num_erros++;
+							System.out.println("Erro na linha "+ m_lexer.m_line + ": Tipos incompatíveis"); break;
+						}
+					}
+				
+				
+			}
 			}
 			
 			//if (l_typeID!= null && l_typeID.equals(Type.Int) && l_typeExp.equals(Type.Real))

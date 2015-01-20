@@ -7,7 +7,7 @@ program teste1
   read (a);
   read (c);
   a := b;
-  result := (a * b)/(500+600+a+a);
+  result := (a * a)/(500+600+a+a);
   write(result);
   teste1 := -15;
 }
