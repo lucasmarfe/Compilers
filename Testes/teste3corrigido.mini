@@ -9,7 +9,7 @@ repeat
         read (altura);
         soma := soma + altura;
         cont := cont - 1;
-      until(cont+qtd);
+      until(cont+qtd>qtd);
       write("Media: ");
       write (soma / qtd);
 }

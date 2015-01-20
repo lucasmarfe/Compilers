@@ -129,7 +129,7 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case Tag.ID:
 			if(! (((Word)m_tok).is_First_Time))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
 			else
 			{
 				((Word)m_tok).was_Declared = true;
@@ -150,7 +150,7 @@ public class Parser {
 		case ',':
 			eat(',');
 			if(! (((Word)m_tok).is_First_Time))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
 			else
 				((Word)m_tok).was_Declared = true;
 			
@@ -243,7 +243,7 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case Tag.ID:
 			if(! (((Word)m_tok).was_Declared))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
 			Type l_typeID = m_tok instanceof Word ? ((Word)m_tok).m_Tipo : null;
 			Hashtable<String, Token> tab = m_lexer.getHashtable(); 
 			Token tipo_aux = tab.get(m_tok.toString());
@@ -635,7 +635,7 @@ public class Parser {
 		case Tag.ID:
 			
 			if(! (((Word)m_tok).was_Declared))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
 			
 			// Formação da árvore da expressão, para que se possa comparar os tipos nela utilizados
 			Hashtable<String, Token> tab = m_lexer.getHashtable(); 
