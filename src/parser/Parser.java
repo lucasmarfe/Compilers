@@ -277,13 +277,14 @@ public class Parser {
 					}
 				}
 			}
-			else{
+			else{ // Verifica se, na expressão, existe alguma variável de tipo diferente das demais
 					String aux = ids.get(1);
 					for(int i = 1; i < ids.size(); i++){
 						if(!ids.get(i).equalsIgnoreCase(aux)){
 							num_erros++;
 							System.out.println("Erro na linha "+ m_lexer.m_line + ": Tipos incompatíveis"); break;
 						}
+						aux = ids.get(i);
 					}
 				
 				
