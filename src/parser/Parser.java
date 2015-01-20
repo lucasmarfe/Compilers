@@ -352,6 +352,18 @@ public class Parser {
 			eat(Tag.REPEAT);
 			stmtlist();
 			stmtsuffix();
+			// Verifica se os temos são compatíveis entre si:
+						if(ids != null){
+						String aux = ids.get(0);
+						for(int i = 0; i < ids.size(); i++){
+							if(!ids.get(i).equals(aux)){
+								
+								System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+								break;
+							}
+						}
+						}
+						ids = new ArrayList<String>();
 			break;
 		default:
 			error("repeat");
