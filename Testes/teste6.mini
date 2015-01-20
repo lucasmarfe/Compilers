@@ -6,7 +6,7 @@ program teste6
       read(c);
 if(a>b&a>c )then maior := a
       else
-         if (b>c) then
+         if (b+c>10) then
              maior := b
          else
 maior := c end

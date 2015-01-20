@@ -1,9 +1,10 @@
 package parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import symbols.Type;
-
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
@@ -67,6 +68,7 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case Tag.PROGRAM:
 			eat(Tag.PROGRAM);
+			((Word)m_tok).was_Declared = true; // Para não apontar erro do identificador do programa
 			eat(Tag.ID);
 			body();
 			break;
@@ -233,6 +235,7 @@ public class Parser {
 			error("identificador, if, while, repeat, read, ou write");
 		}
 	}
+	ArrayList<String> ids = new ArrayList<String>();
 
 	private void assignstmt() throws Exception { //TODO Verificar se variavel foi declarada - OK
 		// assign-stmt ::= identifier ":=" simple_expr
@@ -240,13 +243,37 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case Tag.ID:
 			if(! (((Word)m_tok).was_Declared))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
 			Type l_typeID = m_tok instanceof Word ? ((Word)m_tok).m_Tipo : null;
+			Hashtable<String, Token> tab = m_lexer.getHashtable(); 
+			Token tipo_aux = tab.get(m_tok.toString());
+			
 			eat(Tag.ID);
 			eat(Tag.ASSIGN);
+			ids = new ArrayList<String>();
+			
+			// Construção da árvore das expressões. O primeiro elemento é sempre a variável a quem a expressão está sendo atribuída
+			if((((Word)tipo_aux).m_Tipo) != null){
+			ids.add((((Word)tipo_aux).m_Tipo).toString());
+			}
+			
 			Type l_typeExp = simpleexpr();
-			if (l_typeID!= null && l_typeID.equals(Type.Int) && l_typeExp.equals(Type.Real))
-				System.out.println("Warning: Poss�vel atribui��o de um valor real a uma var�avel inteira na linha " + m_lexer.m_line);
+			//System.out.println(ids);
+			
+			// Verifica se foi atribuída alguma expressão que possua real a uma variável inteira
+			// Lembrando que o primeiro elemento do array é sempre a variável à qual será feita a atribuição
+			if(!ids.isEmpty()){
+			if(ids.get(0).equalsIgnoreCase("integer")){
+				for(int i = 1; i < ids.size(); i++){
+					if(ids.get(i).equalsIgnoreCase("real")){
+						System.out.println("Erro na linha "+ m_lexer.m_line + ": Tipos incompatíveis"); break;
+					}
+				}
+			}
+			}
+			
+			//if (l_typeID!= null && l_typeID.equals(Type.Int) && l_typeExp.equals(Type.Real))
+			//	System.out.println("Warning: Poss�vel atribui��o de um valor real a uma var�avel inteira na linha " + m_lexer.m_line);
 			break;
 		default:
 			error("identificador, if, while, repeat, read ou write");
@@ -260,9 +287,23 @@ public class Parser {
 		case Tag.IF:
 			eat(Tag.IF);
 			condition();
+			// Verifica se os temos são compatíveis entre si:
+			if(ids != null){
+			String aux = ids.get(0);
+			for(int i = 0; i < ids.size(); i++){
+				if(!ids.get(i).equals(aux)){
+					
+					System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+					break;
+				}
+			}
+			}
+			ids = new ArrayList<String>();
 			eat(Tag.THEN);
 			stmtlist();
 			ifstmtline();
+			
+			
 			break;
 		default:
 			error("if");
@@ -366,7 +407,7 @@ public class Parser {
 			eat(Tag.READ);
 			eat('(');
 			if(! (((Word)m_tok).was_Declared))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
 			eat(Tag.ID);
 			eat(')');
 			break;
@@ -406,6 +447,7 @@ public class Parser {
 		}
 	}
 
+	//ArrayList<String> ids = new ArrayList<String>();
 	private void expression() throws Exception {
 		// expression ::= simple-expr expression'
 		prod_atual = 21;
@@ -579,8 +621,17 @@ public class Parser {
 		switch (m_tok.m_tag) {
 
 		case Tag.ID:
+			
 			if(! (((Word)m_tok).was_Declared))
-				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+			
+			// Formação da árvore da expressão, para que se possa comparar os tipos nela utilizados
+			Hashtable<String, Token> tab = m_lexer.getHashtable(); 
+			Token tipo_aux = tab.get(m_tok.toString());
+			if(((Word)tipo_aux).m_Tipo != null){
+			ids.add((((Word)tipo_aux).m_Tipo).toString());
+			}
+			
 			eat(Tag.ID);
 			break;
 		case Tag.INTEGER:
