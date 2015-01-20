@@ -128,8 +128,10 @@ public class Parser {
 		prod_atual = 5;
 		switch (m_tok.m_tag) {
 		case Tag.ID:
-			if(! (((Word)m_tok).is_First_Time))
+			if(! (((Word)m_tok).is_First_Time)){
 				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+			    num_erros++;
+			}
 			else
 			{
 				((Word)m_tok).was_Declared = true;
@@ -149,8 +151,10 @@ public class Parser {
 		switch (m_tok.m_tag) {
 		case ',':
 			eat(',');
-			if(! (((Word)m_tok).is_First_Time))
+			if(! (((Word)m_tok).is_First_Time)){
+				num_erros++;
 				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" declarada mais de uma vez.");
+			}
 			else
 				((Word)m_tok).was_Declared = true;
 			
@@ -242,8 +246,10 @@ public class Parser {
 		prod_atual = 10;
 		switch (m_tok.m_tag) {
 		case Tag.ID:
-			if(! (((Word)m_tok).was_Declared))
+			if(! (((Word)m_tok).was_Declared)){
 				System.out.println("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+				num_erros++;	
+			}
 			Type l_typeID = m_tok instanceof Word ? ((Word)m_tok).m_Tipo : null;
 			Hashtable<String, Token> tab = m_lexer.getHashtable(); 
 			Token tipo_aux = tab.get(m_tok.toString());
@@ -266,6 +272,7 @@ public class Parser {
 			if(ids.get(0).equalsIgnoreCase("integer")){
 				for(int i = 1; i < ids.size(); i++){
 					if(ids.get(i).equalsIgnoreCase("real")){
+						num_erros++;
 						System.out.println("Erro na linha "+ m_lexer.m_line + ": Tipos incompatíveis"); break;
 					}
 				}
@@ -288,11 +295,11 @@ public class Parser {
 			eat(Tag.IF);
 			condition();
 			// Verifica se os temos são compatíveis entre si:
-			if(ids != null){
+			if(!ids.isEmpty()){
 			String aux = ids.get(0);
 			for(int i = 0; i < ids.size(); i++){
 				if(!ids.get(i).equals(aux)){
-					
+					num_erros++;
 					System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
 					break;
 				}
@@ -353,11 +360,11 @@ public class Parser {
 			stmtlist();
 			stmtsuffix();
 			// Verifica se os temos são compatíveis entre si:
-						if(ids != null){
+						if(!ids.isEmpty()){
 						String aux = ids.get(0);
 						for(int i = 0; i < ids.size(); i++){
 							if(!ids.get(i).equals(aux)){
-								
+								num_erros++;
 								System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
 								break;
 							}
@@ -418,8 +425,10 @@ public class Parser {
 		case Tag.READ:
 			eat(Tag.READ);
 			eat('(');
-			if(! (((Word)m_tok).was_Declared))
+			if(! (((Word)m_tok).was_Declared)){
+				num_erros++;
 				throw new Exception("Variavel " + ((Word)m_tok).m_lexema +" n�o declarada.");
+			}
 			eat(Tag.ID);
 			eat(')');
 			break;
