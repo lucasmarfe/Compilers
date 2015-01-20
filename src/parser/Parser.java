@@ -269,14 +269,14 @@ public class Parser {
 			// Verifica se foi atribuída alguma expressão que possua real a uma variável inteira
 			// Lembrando que o primeiro elemento do array é sempre a variável à qual será feita a atribuição
 			if(!ids.isEmpty()){
-			//if(ids.get(0).equalsIgnoreCase("integer")){
+			if(ids.get(0).equalsIgnoreCase("integer")){
 				for(int i = 1; i < ids.size(); i++){
 					if(ids.get(i).equalsIgnoreCase("real")){
 						num_erros++;
 						System.out.println("Erro na linha "+ m_lexer.m_line + ": Tipos incompatíveis"); break;
 					}
 				}
-			//}
+			}
 			}
 			
 			//if (l_typeID!= null && l_typeID.equals(Type.Int) && l_typeExp.equals(Type.Real))
