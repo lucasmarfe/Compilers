@@ -1,13 +1,12 @@
 program teste1
   
-  integer a, d, c;
-  real b;
-  real result;
+  integer a, b, c;
+  integer result;
 {
   read (a);
   read (c);
-  a := b;
-  b := (a * a)/(500+600+b+a);
+  b := 10;
+  result := (a * c)/(b + 5 - 345);
   write(result);
   teste1 := -15;
 }

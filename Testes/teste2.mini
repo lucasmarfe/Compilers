@@ -1,10 +1,11 @@
 program teste2
-declarando
+%declarando
   integer a;
   integer b;
-  float c;
+  real c;
 {
   read (a);
   b := a * a;
 c := b + a/2 * (3 + 5);
-write(c) };
+write(c); 
+}

@@ -1,11 +1,18 @@
 program teste8
-  
-  integer a,b,c;
-  integer result;
-{
-  a := 2;
-  read (c);
-  b := 10;
-  result := (a * c + 2.123456789)/(b + 5 - 1.);
-  write(result);
-}
+   integer a, c, maior;
+   real b;
+   {
+      read(a);
+      read(b);
+      read(c);
+if((a>b) && (a>c) )then 
+		maior := a;
+      else
+         if (b+c>10) then
+             maior := b;
+         else
+			maior := c;
+ 		 end;
+end;
+      write(maior);
+   }
