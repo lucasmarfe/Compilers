@@ -7,9 +7,9 @@ program teste3corrigido
 repeat
         write("Altura: ");
         read (altura);
-        soma := soma + altura;
+        cont := soma;
         cont := cont - 1;
-      until(cont+qtd>qtd);
+      until(cont+qtd>media);
       write("Media: ");
       write (soma / qtd);
 }

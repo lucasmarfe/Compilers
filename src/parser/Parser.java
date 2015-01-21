@@ -69,6 +69,7 @@ public class Parser {
 		case Tag.PROGRAM:
 			eat(Tag.PROGRAM);
 			((Word)m_tok).was_Declared = true; // Para não apontar erro do identificador do programa
+			m_lexer.getHashtable().remove(m_tok.toString());
 			eat(Tag.ID);
 			body();
 			break;
@@ -197,7 +198,18 @@ public class Parser {
 		case Tag.WRITE:
 			stmt();
 			eat(';');
-			stmtlist(); 
+			stmtlist();
+			if(!ids.isEmpty()){
+				String aux = ids.get(0);
+				for(int i = 0; i < ids.size(); i++){
+					if(!ids.get(i).equals(aux)){
+						num_erros++;
+						System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+						break;
+					}
+				}
+				}
+				ids = new ArrayList<String>();
 		break;
 		case '}':
 			break;
@@ -409,6 +421,17 @@ public class Parser {
 		case Tag.WHILE:
 			stmtprefix();
 			stmtlist();
+			if(!ids.isEmpty()){
+				String aux = ids.get(0);
+				for(int i = 0; i < ids.size(); i++){
+					if(!ids.get(i).equals(aux)){
+						num_erros++;
+						System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+						break;
+					}
+				}
+				}
+				ids = new ArrayList<String>();
 			eat(Tag.END);
 			break;
 		default:
@@ -458,6 +481,17 @@ public class Parser {
 			eat('(');
 			writable();
 			eat(')');
+			if(!ids.isEmpty()){
+				String aux = ids.get(0);
+				for(int i = 0; i < ids.size(); i++){
+					if(!ids.get(i).equals(aux)){
+						num_erros++;
+						System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+						break;
+					}
+				}
+				}
+				ids = new ArrayList<String>();
 			break;
 		default:
 			error("write");
@@ -471,6 +505,17 @@ public class Parser {
 		case '(':
 		case Tag.ID:
 			simpleexpr();
+			if(!ids.isEmpty()){
+				String aux = ids.get(0);
+				for(int i = 0; i < ids.size(); i++){
+					if(!ids.get(i).equals(aux)){
+						num_erros++;
+						System.out.println("Erro na linha "+m_lexer.m_line+": Tipos incompatíveis");
+						break;
+					}
+				}
+				}
+				ids = new ArrayList<String>();
 			break;
 		case Tag.LITERAL:
 			eat(Tag.LITERAL);
