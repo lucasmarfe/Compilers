@@ -1,11 +1,11 @@
 program teste7corrigido
   
-  integer a1b2c3d4e567n91011;
-  integer a, b, c, result;
+  integer a, d, c, b;
+  real result;
 {
   read (a);
   read (c);
-  b := 10;
-  result := (a * c)/(b + 5 - 1.0);
-  write(result); 
+  a := b;
+  b := (a * d)/(500+600+b+a);
+  write(result);
 }

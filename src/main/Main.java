@@ -29,7 +29,7 @@ public class Main {
 		if(parse.getNumErros() == 0 && is_OK)
 		System.out.println("Analise concluida com sucesso.\n");
 		else
-		System.out.println("Analise concluida com " + (parse.getNumErros()==0 ? "":parse.getNumErros() )+ " erro.");	
+		System.out.println("Analise concluida com " + (parse.getNumErros()==0 ? "":parse.getNumErros() )+ " erro(s).");	
 		
 		/*
 		int i = 1;

@@ -5,10 +5,10 @@ program teste5
 {
 read(j);
 read(k);
-     if (k != 0)
-        result := j/k
+     if (k != 0) then
+        result := j/k;
      else
-        result := 0
+        result := 0;
 end;
-write(res) 
+write(res); 
 }

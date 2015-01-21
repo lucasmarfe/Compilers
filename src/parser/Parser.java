@@ -69,7 +69,7 @@ public class Parser {
 		case Tag.PROGRAM:
 			eat(Tag.PROGRAM);
 			((Word)m_tok).was_Declared = true; // Para não apontar erro do identificador do programa
-			m_lexer.getHashtable().remove(m_tok.toString());
+			m_lexer.getHashtable().remove(m_tok.toString()); // Não é necessário manter o nome do programa
 			eat(Tag.ID);
 			body();
 			break;
