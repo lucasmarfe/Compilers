@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-program teste1  integer a, b, c;  integer result;{  read (a);  read (c);  b := 10;  result := (a * c)/(b + 5 - 345);  write(result);  teste1 := 1;}
-=======
 program teste1
   
   integer a, b, c;
@@ -13,4 +10,3 @@ program teste1
   write(result);
   teste1 := -15;
 }
->>>>>>> FETCH_HEAD
